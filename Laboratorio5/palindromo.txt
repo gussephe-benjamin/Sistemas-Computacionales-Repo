@@ -1,0 +1,46 @@
+    .text
+    .globl main
+
+main:
+    la t0, palabra         # t0 = inicio del string
+    li t1, 0               # t1 = contador longitud
+
+# -------- Calcular longitud --------
+calc_len:
+    lb t2, 0(t0)           # cargar carácter
+    beq t2, x0, len_done   # si es '\0' => fin
+    addi t1, t1, 1         # longitud++
+    addi t0, t0, 1         # avanzar puntero
+    j calc_len
+
+len_done:
+    addi t1, t1, -1        # longitud real - 1 (último índice válido)
+    la t0, palabra         # reiniciar t0 al inicio
+    add t3, t0, t1         # t3 = puntero al final (último carácter)
+
+# -------- Verificar palíndromo --------
+check_loop:
+    bge t0, t3, palindromo # si puntero inicio >= fin → todo coincide
+    lb t4, 0(t0)           # cargar char inicio
+    lb t5, 0(t3)           # cargar char fin
+    bne t4, t5, no_pal     # si son distintos → no palíndromo
+    addi t0, t0, 1         # avanzar inicio
+    addi t3, t3, -1        # retroceder fin
+    j check_loop
+
+# -------- Resultados --------
+palindromo:
+    li a0, 1               # a0 = 1 → es palíndromo
+    j fin
+
+no_pal:
+    li a0, 0               # a0 = 0 → no es palíndromo
+
+fin:
+    li a7, 10              # salir del programa
+    ecall
+
+# -------- Datos --------
+    .data
+palabra:
+    .string "oso"          # Cambia aquí la palabra a verificar

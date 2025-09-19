@@ -1,0 +1,28 @@
+.text
+.globl main
+
+main:
+    la t0, matriz          # t0 = dirección base de la matriz
+    li t1, 0               # t1 = índice (contador)
+    li t2, COLS            # t2 = número de elementos en la primera fila
+
+loop_fila:
+    beq t1, t2, fin        # si recorrimos todas las columnas de la primera fila → fin
+    lw t3, 0(t0)           # cargar elemento
+    addi t3, t3, 1         # sumarle 1
+    sw t3, 0(t0)           # guardar el nuevo valor en memoria
+    addi t0, t0, 4         # avanzar al siguiente elemento (4 bytes por .word)
+    addi t1, t1, 1         # índice++
+    j loop_fila
+
+fin:
+    li a7, 10              # salir
+    ecall
+
+.data
+matriz:
+    .word 1, 2, 3,
+          4, 5, 6
+
+.equ FILAS, 2
+.equ COLS, 3

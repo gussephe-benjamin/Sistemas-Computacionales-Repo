@@ -1,0 +1,58 @@
+.global _start
+_start:
+	
+    # --------------------------------------
+    # Inicialización
+    # --------------------------------------
+    la t0, arreglo        # t0 = dirección base del arreglo
+    la t1, N              # t1 = número de elementos
+    li t2, 0              # t2 = suma acumulada
+    li t3, -2147483648    # t3 = máximo (inicial = entero más pequeño)
+
+    la t4, 0              # t4 = índice i
+
+loop:
+    beq t4, t1, fin       # si i == N => terminar
+
+    lw t5, 0(t0)          # cargar arreglo[i]
+    add t2, t2, t5        # suma += elemento
+
+    blt t3, t5, nuevo_max # si max < elemento => actualizar máximo
+    j siguiente
+
+nuevo_max:
+    mv t3, t5             # max = elemento
+
+siguiente:
+    addi t0, t0, 4        # avanzar al siguiente elemento (4 bytes por .word)
+    addi t4, t4, 1        # i++
+    j loop
+
+fin:
+    # Calcular promedio = suma / N
+    div t6, t2, t1        # t6 = promedio
+
+    # En este punto:
+    # t2 = suma
+    # t3 = máximo
+    # t6 = promedio
+
+    li a7, 10             # salir
+    ecall
+
+# --------------------------------------
+# Datos en memoria
+# --------------------------------------
+
+    .data
+arreglo:
+    .word 5, 12, 7, 20, 3   # Arreglo de enteros (N=5)
+
+# Reservas de memoria (ejemplo de uso de directivas)
+valores_bytes:
+    .byte 1, 2, 3, 4        # Cada valor ocupa 1 byte
+
+buffer:
+    .space 16               # Reservar 16 bytes de espacio (ej. para uso temporal)
+
+    .equ N, 5               # Constante N = número de elementos
